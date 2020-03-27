@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="zh-Hans"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="description" content="使用kubeadm搭建kubernetes集群"><meta name="keywords" content="kubeadm,kubernetes"><meta name="author" content="平常心,undefined"><meta name="copyright" content="平常心"><title>使用kubeadm搭建kubernetes集群 | 平常心</title><link rel="shortcut icon" href="/my-favicon.ico"><link rel="stylesheet" href="/css/index.css?version=1.5.6"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css?version=1.5.6"><link rel="dns-prefetch" href="https://cdn.staticfile.org"><link rel="dns-prefetch" href="https://cdn.bootcss.com"><link rel="dns-prefetch" href="https://creativecommons.org"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  }
+} </script></head><body><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar"><div class="toggle-sidebar-info text-center"><span data-toggle="切换文章详情">切换站点概览</span><hr></div><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#参考下面博客完成大部分组件安装"><span class="toc-number">1.</span> <span class="toc-text">参考下面博客完成大部分组件安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题"><span class="toc-number">1.1.</span> <span class="toc-text">问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#这很可能是-iptables-规则乱了，我通过执行以下命令解决了，在此记录："><span class="toc-number">2.</span> <span class="toc-text">这很可能是 iptables 规则乱了，我通过执行以下命令解决了，在此记录：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Worker节点安装"><span class="toc-number">3.</span> <span class="toc-text">Worker节点安装</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#安装"><span class="toc-number">3.0.0.1.</span> <span class="toc-text">安装</span></a></li></ol></li></ol><li class="toc-item toc-level-3"><a class="toc-link" href="#获得dashboard文件并安装"><span class="toc-number">3.1.</span> <span class="toc-text">获得dashboard文件并安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#创建新的kubeadm-join令牌"><span class="toc-number">4.</span> <span class="toc-text">创建新的kubeadm join令牌</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#kubectl命令"><span class="toc-number">5.</span> <span class="toc-text">kubectl命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Jenkins-Gitlab-Kubernetes-的自动化持续集成与部署"><span class="toc-number">6.</span> <span class="toc-text">Jenkins + Gitlab + Kubernetes 的自动化持续集成与部署</span></a></li></div></div><div class="author-info hide"><div class="author-info__avatar text-center"><img src="https://avatars1.githubusercontent.com/u/661159?s=460&amp;v=4"></div><div class="author-info__name text-center">平常心</div><div class="author-info__description text-center">Java,前端</div><div class="follow-button"><a href="https://github.com/zyw" target="_blank">Follow Me</a></div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">文章</span><span class="pull-right">5</span></a><a class="author-info-articles__tags article-meta" href="/tags"><span class="pull-left">标签</span><span class="pull-right">8</span></a><a class="author-info-articles__categories article-meta" href="/categories"><span class="pull-left">分类</span><span class="pull-right">4</span></a></div></div></div><div id="content-outer"><div id="top-container" style="background-image: url(/img/banner.jpg)"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">平常心</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus"><a class="site-page" href="/">Home</a><a class="site-page" href="/archives">Archives</a><a class="site-page" href="/tags">Tags</a><a class="site-page" href="/categories">Categories</a></span></div><div id="post-info"><div id="post-title">使用kubeadm搭建kubernetes集群</div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 2019-01-18</time><span class="post-meta__separator">|</span><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/kubernetes/">kubernetes</a></div></div></div><div class="layout" id="content-inner"><article id="post"><div class="article-container" id="post-content"><h2 id="参考下面博客完成大部分组件安装"><a href="#参考下面博客完成大部分组件安装" class="headerlink" title="参考下面博客完成大部分组件安装"></a>参考下面博客完成大部分组件安装</h2><p><a href="https://www.datayang.com/article/45" target="_blank" rel="noopener">Centos7快速搭建Kubernetes 1.11.1单机集群</a></p>
+<p>可以完成到<code>dashboard</code>前的搭建</p>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
+<li><p>安装指定版本的docker</p>
+<p><code>yum install docker-ce-17.09.0.ce -y</code></p>
+</li>
+<li><p><code>coredns</code>服务不停的<code>restart</code>，解决办法：</p>
+</li>
+</ol>
+<blockquote>
+<p>kubernetes（k8s）DNS 服务反复重启解决：</p>
+<p>k8s.io/dns/pkg/dns/dns.go:150: Failed to list *v1.Service: Get <a href="https://10.96.0.1:443/api/v1/services?resourceVersion=0" target="_blank" rel="noopener">https://10.96.0.1:443/api/v1/services?resourceVersion=0</a>: dial tcp 10.96.0.1:443: getsockopt: no route to host<br>在使用 Minikube 部署 kubernetes 服务时，出现 Kube DNS 服务反复重启现象（错误如上），</p>
+<h2 id="这很可能是-iptables-规则乱了，我通过执行以下命令解决了，在此记录："><a href="#这很可能是-iptables-规则乱了，我通过执行以下命令解决了，在此记录：" class="headerlink" title="这很可能是 iptables 规则乱了，我通过执行以下命令解决了，在此记录："></a>这很可能是 iptables 规则乱了，我通过执行以下命令解决了，在此记录：</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> systemctl stop kubelet</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> systemctl stop docker</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> iptables --flush</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> iptables -tnat --flush</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> systemctl start kubelet</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> systemctl start docker</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"></span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>参考：<a href="https://blog.csdn.net/shida_csdn/article/details/80028905" target="_blank" rel="noopener">https://blog.csdn.net/shida_csdn/article/details/80028905</a></p>
+</blockquote>
+<a id="more"></a>
+<h2 id="Worker节点安装"><a href="#Worker节点安装" class="headerlink" title="Worker节点安装"></a>Worker节点安装</h2><p>安装Worker节点步骤如下：就是<a href="https://www.datayang.com/article/45" target="_blank" rel="noopener">Centos7快速搭建Kubernetes 1.11.1单机集群</a>博客中的前面步骤。</p>
+<ol>
+<li>用swap分区</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo swapoff -a</span><br></pre></td></tr></table></figure>
+<p>  永久禁用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo vi /etc/fstab</span><br></pre></td></tr></table></figure>
+<p>把/dev/mapper/centos-swap swap这行注释掉</p>
+<p>  编写配置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vim /etc/sysctl.d/k8s.conf</span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1    </span><br><span class="line">vm.swappiness=0</span><br><span class="line">sysctl --system</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>配置kubernetes yum源</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vim  /etc/yum.repos.d/kubernetes.repo</span><br><span class="line">[kubernetes]</span><br><span class="line">name=kubernetes</span><br><span class="line">baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/</span><br><span class="line">gpgcheck=0</span><br><span class="line">enable=1</span><br><span class="line">cd /etc/yum.repos.d/</span><br><span class="line">wget https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span><br><span class="line">yum clean all</span><br><span class="line">yum repolist</span><br></pre></td></tr></table></figure>
+<h5 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h5><p>安装kubeadm, kubelet and kubectl</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install docker-ce kubelet-1.11.1 kubeadm-1.11.1  kubectl-1.11.1 kubernetes-cni</span><br><span class="line">systemctl enable docker</span><br><span class="line">systemctl enable kubelet.service</span><br><span class="line">systemctl start docker</span><br><span class="line">systemctl start kubelet</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>由于国内网络原因，kubernetes的镜像托管在google云上，无法直接下载，所以直接把把镜像搞下来有个技术大牛把gcr.io的镜像</li>
+</ol>
+<p>每天同步到<a href="https://github.com/anjia0532/gcr.io_mirror这个站点，因此，如果需要用到gcr.io的镜像，可以执行如下的脚本进行镜像拉取" target="_blank" rel="noopener">https://github.com/anjia0532/gcr.io_mirror这个站点，因此，如果需要用到gcr.io的镜像，可以执行如下的脚本进行镜像拉取</a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vim pullimages.sh</span><br><span class="line">#!/bin/bash</span><br><span class="line">images=(kube-proxy-amd64:v1.11.1 kube-scheduler-amd64:v1.11.1 kube-controller-manager-amd64:v1.11.1</span><br><span class="line">kube-apiserver-amd64:v1.11.1 etcd-amd64:3.2.18 coredns:1.1.3 pause:3.1 )</span><br><span class="line">for imageName in $&#123;images[@]&#125; ; do</span><br><span class="line">docker pull anjia0532/google-containers.$imageName</span><br><span class="line">docker tag anjia0532/google-containers.$imageName k8s.gcr.io/$imageName</span><br><span class="line">docker rmi anjia0532/google-containers.$imageName</span><br><span class="line">done</span><br><span class="line">sh pullimages.sh</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>kubernetes集群不允许开启swap，所以我们需要忽略这个错误</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vim /etc/sysconfig/kubelet</span><br><span class="line">KUBELET_EXTRA_ARGS=&quot;--fail-swap-on=false&quot;</span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li><p>执行在安装master时最后生成的一段代码，代码格式如下：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">kubeadm join 192.168.0.184:6443 --token zr21ox.if71afbyjpk0khq7 --discovery-token-ca-cert-hash sha256:296c9615eebd158adcfebd6710610b352da55152566ce87bf56559b0ddd596b1</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="获得dashboard文件并安装"><a href="#获得dashboard文件并安装" class="headerlink" title="获得dashboard文件并安装"></a>获得<code>dashboard</code>文件并安装</h3><ol>
+<li><p>下载<code>dashboard.yaml</code>文件</p>
+<p><code>wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.0/src/deploy/recommended/kubernetes-dashboard.yaml</code></p>
+</li>
+<li><p>修改文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kind: Service</span><br><span class="line">apiVersion: v1</span><br><span class="line">metadata:</span><br><span class="line">  labels:</span><br><span class="line">    k8s-app: kubernetes-dashboard</span><br><span class="line">  name: kubernetes-dashboard</span><br><span class="line">  namespace: kube-system</span><br><span class="line">spec:</span><br><span class="line">  # 添加Service的type为NodePort</span><br><span class="line">  type: NodePort</span><br><span class="line">  ports:</span><br><span class="line">    - port: 443</span><br><span class="line">      targetPort: 8443</span><br><span class="line">      # 添加映射到虚拟机的端口,k8s只支持30000以上的端口</span><br><span class="line">      nodePort: 30001</span><br><span class="line">  selector:</span><br><span class="line">    k8s-app: kubernetes-dashboard</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl apply -f kubernetes-dashboard.yaml</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取token</p>
+<p>这里有一个简单的命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl -n kube-system describe $(kubectl -n kube-system get secret -n kube-system -o name | grep namespace) | grep token</span><br></pre></td></tr></table></figure>
+<p>也可以自己手动查询：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 输入下面命令查询kube-system命名空间下的所有secret</span><br><span class="line">kubectl get secret -n kube-system</span><br><span class="line"></span><br><span class="line"># 然后获取token。只要是type为service-account-token的secret的token都可以使用。</span><br><span class="line"># 比如我们获取replicaset-controller-token-wsv4v的touken</span><br><span class="line">kubectl -n kube-system describe replicaset-controller-token-wsv4v</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>访问dashboard</p>
+<p>通过node节点的ip，加刚刚我们设置的nodePort就可以访问了。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https://&lt;node-ip&gt;:&lt;node-port&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>注意是https不是http哦</strong></p>
+<p>认证有两种方式：</p>
+<ul>
+<li><p>通过我们刚刚获取的token直接认证</p>
+</li>
+<li><p>通过Kubeconfig文件认证<br>只需要在kubeadm生成的admin.conf文件末尾加上刚刚获取的token就好了。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">- name: kubernetes-admin</span><br><span class="line">  user:</span><br><span class="line">    client-certificate-data: xxxxxxxx</span><br><span class="line">    client-key-data: xxxxxx</span><br><span class="line">    token: &quot;在这里加上token&quot;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="创建新的kubeadm-join令牌"><a href="#创建新的kubeadm-join令牌" class="headerlink" title="创建新的kubeadm join令牌"></a>创建新的<code>kubeadm join</code>令牌</h2><p><code>kubeadm token create --print-join-command</code></p>
+<h2 id="kubectl命令"><a href="#kubectl命令" class="headerlink" title="kubectl命令"></a><code>kubectl</code>命令</h2><ol>
+<li><p><code>kubectl get pods -n kube-system</code></p>
+</li>
+<li><p><code>kubectl describe pod podName --namespace=kube-system</code> 其中的podName是你的pod名称</p>
+</li>
+<li><p><code>kubectl describe node master</code> master是节点名称 可以通过<code>kubectl get nodes</code>得到。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@nsop-k8s1 ~]# kubectl get nodes</span><br><span class="line">NAME        STATUS    ROLES     AGE       VERSION</span><br><span class="line">nsop-k8s1   Ready     master    2h        v1.11.1</span><br><span class="line">nsop-k8s2   Ready     &lt;none&gt;    2h        v1.11.1</span><br><span class="line">[root@nsop-k8s1 ~]#</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="Jenkins-Gitlab-Kubernetes-的自动化持续集成与部署"><a href="#Jenkins-Gitlab-Kubernetes-的自动化持续集成与部署" class="headerlink" title="Jenkins + Gitlab + Kubernetes 的自动化持续集成与部署"></a>Jenkins + Gitlab + Kubernetes 的自动化持续集成与部署</h2><p><a href="https://huanqiang.wang/2018/03/30/Jenkins-Gitlab-Kubernetes-%E7%9A%84%E8%87%AA%E5%8A%A8%E5%8C%96%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90%E4%B8%8E%E9%83%A8%E7%BD%B2/" target="_blank" rel="noopener">Jenkins + Gitlab + Kubernetes 的自动化持续集成与部署</a></p>
+</div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">平常心</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://blog.v5cn.cn/2019/01/18/使用kubeadm搭建kubernetes集群/">http://blog.v5cn.cn/2019/01/18/使用kubeadm搭建kubernetes集群/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://blog.v5cn.cn" target="_blank">平常心</a>！</span></div></div><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/kubeadm/">kubeadm</a><a class="post-meta__tags" href="/tags/kubernetes/">kubernetes</a></div><nav id="pagination"><div class="prev-post pull-left"><a href="/2020/03/27/RPC技术之动态代理/"><i class="fa fa-chevron-left">  </i><span>RPC技术之动态代理(一)</span></a></div><div class="next-post pull-right"><a href="/2019/01/14/spring-event/"><span>Spring内置事件和自定义事件</span><i class="fa fa-chevron-right"></i></a></div></nav></div></div><footer><div class="layout" id="footer"><div class="copyright">&copy;2019 - 2020 By 平常心</div><div class="framework-info"><span>驱动 - </span><a href="http://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 - </span><a href="https://github.com/Molunerfinn/hexo-theme-melody"><span>Melody</span></a></div><div class="footer_custom_text">Hi, welcome to my <a href="http://blog.v5cn.cn">blog</a>!</div><div class="busuanzi"><script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script><span id="busuanzi_container_page_pv"><i class="fa fa-file-o"></i><span id="busuanzi_value_page_pv"></span><span></span></span></div></div></footer><i class="fa fa-arrow-up" id="go-up" aria-hidden="true"></i><script src="/js/third-party/anime.min.js"></script><script src="/js/third-party/jquery.min.js"></script><script src="/js/third-party/jquery.fancybox.min.js"></script><script src="/js/third-party/velocity.min.js"></script><script src="/js/third-party/velocity.ui.min.js"></script><script src="/js/utils.js?version=1.5.6"></script><script src="/js/fancybox.js?version=1.5.6"></script><script src="/js/sidebar.js?version=1.5.6"></script><script src="/js/copy.js?version=1.5.6"></script><script src="/js/fireworks.js?version=1.5.6"></script><script src="/js/transition.js?version=1.5.6"></script><script src="/js/scroll.js?version=1.5.6"></script><script src="/js/head.js?version=1.5.6"></script></body></html>
